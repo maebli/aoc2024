@@ -1,5 +1,7 @@
 #![feature(test)]
 extern crate test;
+use std::collections::HashMap;
+
 
 fn run() -> (i32, usize) {
     let input = include_str!("input.txt");
@@ -28,9 +30,17 @@ fn run() -> (i32, usize) {
         .map(|(l, r)| (l - r).abs())
         .sum::<i32>();
 
-    let result2: usize = left
+
+    let mut freq_map: HashMap<i32, usize> = HashMap::new();
+    for &elem in &right {
+        *freq_map.entry(elem).or_insert(0) += 1;
+    }
+    
+    let result2= left
         .iter()
-        .map(|&l| (l as usize) * right.iter().filter(|&&x| x == l).count())
+        .filter_map(|&l| {
+            freq_map.get(&l).map(|&count| (l as usize) * count)
+        })
         .sum();
 
     (result, result2)
